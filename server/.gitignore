@@ -1,0 +1,12 @@
+# Ignore all environment credential files everywhere
+*.env
+*.env.local
+*.env.development
+*.env.production
+
+# Ignore backend environment and cache
+server/venv/
+server/__pycache__/
+
+# Ignore frontend dependencies
+client/node_modules/

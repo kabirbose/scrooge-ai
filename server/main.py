@@ -62,7 +62,7 @@ def live_quotes(account_id: str, symbols: str):
     return response.body
 
 
-@app.get("/stocks/pre-trade-impact")
+@app.post("/stocks/pre-trade-impact")
 def pre_trade_impact(
     account_id: str,
     action: str,
@@ -96,3 +96,34 @@ def pre_trade_impact(
 
 
 # stock order routes
+@app.post("/stocks/place-order")
+def place_order(
+    account_id: str,
+    action: str,
+    symbol: str,
+    order_type: str,
+    time_in_force: str,
+    units: float,
+    price: Optional[float] = None,
+    stop: Optional[float] = None,
+):
+    search = snaptrade.reference_data.get_symbols(body={"substring": symbol.upper()})
+    symbol_id = search.body[0]["id"]
+
+    order_data = {
+        "account_id": account_id,
+        "action": action.upper(),
+        "universal_symbol_id": symbol_id,
+        "order_type": order_type,
+        "time_in_force": time_in_force,
+        "units": units,
+    }
+    if price:
+        order_data["price"] = price
+    if stop:
+        order_data["stop"] = stop
+
+    response = snaptrade.trading.place_force_order(
+        user_id=user_id, user_secret=user_secret, body=order_data
+    )
+    return response.body
